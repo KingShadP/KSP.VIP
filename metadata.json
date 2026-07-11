@@ -1,0 +1,6 @@
+{
+  "name": "KingShadP",
+  "description": "Sovereign luxury streetwear house digital archive and private commerce world.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
