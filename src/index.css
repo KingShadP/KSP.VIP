@@ -1,33 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-serif: "Times New Roman", Times, Baskerville, Georgia, serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-serif: "Cormorant Garamond", "Times New Roman", Times, Baskerville, Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* Blueprint Tokens */
-  --color-boot-offwhite: #F4F4F3;
+  --color-boot-offwhite: #F5F3EF;
   --color-archive-offwhite: #ECE9E2;
-  --color-obsidian: #080808;
-  --color-deep-obsidian: #030303;
-  --color-graphite: #171717;
-  --color-oxblood: #5E0008;
+  --color-obsidian: #1A1A1A;
+  --color-deep-obsidian: #111111;
+  --color-graphite: #2A2A2A;
+  --color-oxblood: #93000A;
   --color-crimson-signal: #93000A;
-  --color-antique-gold: #A8874A;
-  --color-rose-gold: #B76E79;
-  --color-platinum: #D7D5CF;
-  --color-blueprint-blue: #20374B;
-  --color-spectral-white: rgba(255,255,255,0.82);
-  --color-grid-white: rgba(255,255,255,0.12);
-  --color-grid-gold: rgba(168,135,74,0.22);
+  --color-antique-gold: #93000A;
+  --color-rose-gold: #A8874A;
+  --color-platinum: #1A1A1A;
+  --color-blueprint-blue: #ECE9E2;
+  --color-spectral-white: rgba(26,26,26,0.85);
+  --color-grid-white: rgba(26,26,26,0.08);
+  --color-grid-gold: rgba(147,0,10,0.15);
   
-  --color-luxury-void: #080808;
-  --color-luxury-dark: #030303;
-  --color-luxury-oxblood: #93000A;
+  --color-luxury-void: #F5F3EF; /* Alabaster background */
+  --color-luxury-dark: #ECE9E2; /* Alabaster slightly darker */
+  --color-luxury-oxblood: #93000A; /* Crimson/red accent */
   --color-luxury-oxblood-dark: #5E0008;
-  --color-luxury-gold: #A8874A;
-  --color-luxury-platinum: #D7D5CF;
-  --color-luxury-ash: #B76E79;
+  --color-luxury-gold: #93000A; /* Gold shifts to crimson */
+  --color-luxury-platinum: #1A1A1A; /* Platinum becomes Ink dark */
+  --color-luxury-ash: rgba(26, 26, 26, 0.4);
 }
 
 @layer utilities {
@@ -90,11 +91,29 @@
   background: #93000a;
 }
 
-/* Smooth scrolling for page collections navigation */
+/* Halftone ink dots pattern */
+.halftone {
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(var(--color-luxury-platinum) 1px, transparent 0);
+  background-size: 16px 16px;
+  opacity: 0.035;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Smooth scrolling and magnetic section snapping for page collections navigation */
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  scroll-padding-top: 0px;
   background-color: var(--color-luxury-void);
   color: var(--color-luxury-platinum);
+}
+
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 body {

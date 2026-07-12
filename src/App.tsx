@@ -21,6 +21,10 @@ export default function App() {
     return stored !== 'false';
   });
 
+  const [gridMomentum, setGridMomentum] = useState(64);
+  const [rotationMass, setRotationMass] = useState(17);
+  const [depthCompression, setDepthCompression] = useState(78);
+
   useEffect(() => {
     localStorage.setItem('spotlight_enabled', String(spotlightEnabled));
   }, [spotlightEnabled]);
@@ -65,16 +69,134 @@ export default function App() {
 
   return (
     <div className="min-h-[800vh] text-luxury-platinum bg-luxury-void selection:bg-luxury-oxblood selection:text-luxury-platinum overflow-x-hidden relative">
+      <div className="halftone" />
       <Bootloader onComplete={() => setBootloaded(true)} />
       
       {bootloaded && (
         <>
-          <VirtualKingdomBackground theme="imperial" />
+          {/* Scroll snap anchor points to prevent rapid overscrolling */}
+          <div className="absolute top-0 left-0 w-full flex flex-col pointer-events-none z-0">
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+            <div className="h-screen snap-section" />
+          </div>
+
+          <VirtualKingdomBackground theme="imperial" gridMomentum={gridMomentum} depthCompression={depthCompression} />
           <FlashlightReveal enabled={spotlightEnabled} />
           <TrackingReticle />
+
+          {/* Top Navigation */}
+          <div className="fixed top-0 left-0 right-0 h-16 border-b border-luxury-platinum/10 bg-luxury-void/80 backdrop-blur-md flex items-center justify-between px-10 z-[60] select-none pointer-events-auto">
+            <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-platinum uppercase">KingShadP // Archive</div>
+            <div className="hidden md:block font-mono text-[10px] tracking-[0.2em] text-luxury-gold uppercase font-semibold">Sovereign Atelier Establishing Sig.</div>
+            <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-platinum/60 uppercase">Vol. 07</div>
+          </div>
+
+          {/* Bottom Navigation */}
+          <div className="fixed bottom-0 left-0 right-0 h-16 border-t border-luxury-platinum/10 bg-luxury-void/80 backdrop-blur-md flex items-center justify-between px-10 z-[60] select-none pointer-events-auto">
+            <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-platinum/60 uppercase">
+              COORD: X+{Math.floor(smoothProgress.get() * 1000)} / Y-{(activeScene * 100) + Math.floor(smoothProgress.get() * 80)}
+            </div>
+            <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-gold uppercase text-center truncate px-4">
+              0{activeScene} // {['THE ARTIST', 'THE HEARTBEAT', 'THE WORLD', 'THE MARK', 'THE PACING', 'THE ARTIFACTS', 'THE SEAL', 'THE GATEWAY'][activeScene - 1]} // Waveforms Restored
+            </div>
+            <div className="hidden md:block font-mono text-[10px] tracking-[0.2em] text-luxury-platinum/60 uppercase text-right">
+              Giragon Seal © 2026
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <aside className="fixed left-0 top-16 bottom-16 w-80 border-r border-luxury-platinum/10 bg-luxury-void/50 backdrop-blur-md p-10 hidden lg:flex flex-col gap-10 z-[50] select-none pointer-events-auto overflow-y-auto scrollbar-none">
+            <div className="flex flex-col gap-2 mt-4">
+              <div className="flex justify-between font-mono text-[9px] tracking-wider text-luxury-platinum/80 uppercase">
+                <span>Grid Momentum</span>
+                <span className="text-luxury-gold">{String(gridMomentum).padStart(3, '0')}</span>
+              </div>
+              <div className="relative pt-1">
+                <input 
+                  type="range" 
+                  min="10" 
+                  max="150" 
+                  value={gridMomentum}
+                  onChange={(e) => setGridMomentum(Number(e.target.value))}
+                  className="w-full accent-luxury-gold bg-luxury-platinum/20 h-[2px] cursor-pointer appearance-none rounded-none outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between font-mono text-[9px] tracking-wider text-luxury-platinum/80 uppercase">
+                <span>Rotation Mass</span>
+                <span className="text-luxury-gold">{String(rotationMass).padStart(3, '0')}</span>
+              </div>
+              <div className="relative pt-1">
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="100" 
+                  value={rotationMass}
+                  onChange={(e) => setRotationMass(Number(e.target.value))}
+                  className="w-full accent-luxury-gold bg-luxury-platinum/20 h-[2px] cursor-pointer appearance-none rounded-none outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between font-mono text-[9px] tracking-wider text-luxury-platinum/80 uppercase">
+                <span>Depth Compression</span>
+                <span className="text-luxury-gold">{String(depthCompression).padStart(3, '0')}</span>
+              </div>
+              <div className="relative pt-1">
+                <input 
+                  type="range" 
+                  min="10" 
+                  max="200" 
+                  value={depthCompression}
+                  onChange={(e) => setDepthCompression(Number(e.target.value))}
+                  className="w-full accent-luxury-gold bg-luxury-platinum/20 h-[2px] cursor-pointer appearance-none rounded-none outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="mt-auto pt-6 border-t border-luxury-platinum/10 flex flex-col gap-4">
+              <div className="font-mono text-[8px] tracking-[0.3em] text-luxury-platinum/60 uppercase">
+                Reveal Mask: <span className={spotlightEnabled ? "text-luxury-gold font-bold" : "text-luxury-platinum/40"}>{spotlightEnabled ? "ACTIVE" : "MUTED"}</span>
+              </div>
+              <button 
+                onClick={() => setSpotlightEnabled(prev => !prev)}
+                className="group relative flex items-center gap-3 bg-luxury-void border border-luxury-platinum/20 hover:border-luxury-gold/50 px-4 py-3 rounded-none transition-all duration-300 shadow-[0_0_10px_rgba(26,26,26,0.02)] cursor-pointer select-none"
+              >
+                <div className="relative flex h-2 w-2">
+                  {spotlightEnabled ? (
+                    <>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-luxury-gold opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-luxury-gold"></span>
+                    </>
+                  ) : (
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-luxury-platinum/30"></span>
+                  )}
+                </div>
+                <span className="font-mono text-[8px] tracking-[0.25em] uppercase text-luxury-platinum">
+                  Spotlight: {spotlightEnabled ? "Active" : "Off"}
+                </span>
+              </button>
+            </div>
+          </aside>
+
           <DiagnosticHUD 
             spotlightEnabled={spotlightEnabled} 
             onToggleSpotlight={() => setSpotlightEnabled(prev => !prev)} 
+            gridMom={gridMomentum}
+            setGridMom={setGridMomentum}
+            rotMass={rotationMass}
+            setRotMass={setRotationMass}
+            depthComp={depthCompression}
+            setDepthComp={setDepthCompression}
           />
           <SpotlightToggle 
             enabled={spotlightEnabled} 
@@ -86,7 +208,7 @@ export default function App() {
           <div className="fixed inset-0 pointer-events-none z-[10]">
             
             {/* SCENE 01 — THE ARTIST (Imagery Dominance 35%) */}
-            <SceneLayer index={1} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center">
+            <SceneLayer index={1} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center lg:pl-80">
               <ParallaxBackground imageUrl="/KingShadP_%20The%20Artist's%20Vision.png" />
               <div className="absolute inset-0 bg-gradient-to-b from-luxury-void/20 via-transparent to-luxury-void" />
               <h1 className="font-serif text-6xl md:text-9xl text-luxury-platinum uppercase tracking-widest font-extralight mix-blend-difference z-10 text-center drop-shadow-2xl mt-48">
@@ -95,8 +217,11 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 02 — THE HEARTBEAT (Music 25%) */}
-            <SceneLayer index={2} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col md:flex-row items-center justify-center px-10 md:px-32 gap-12 md:gap-32">
-              <div className="relative w-64 h-64 md:w-96 md:h-96 rounded-full border-[1px] border-luxury-gold/30 flex items-center justify-center overflow-hidden animate-[spin_10s_linear_infinite] shadow-[0_0_40px_rgba(168,135,74,0.1)]">
+            <SceneLayer index={2} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col md:flex-row items-center justify-center px-10 md:px-32 gap-12 md:gap-32 lg:pl-80">
+              <div 
+                className="relative w-64 h-64 md:w-96 md:h-96 rounded-full border-[1px] border-luxury-gold/30 flex items-center justify-center overflow-hidden shadow-[0_0_40px_rgba(168,135,74,0.1)] animate-[spin_10s_linear_infinite]"
+                style={{ animationDuration: `${Math.max(1, (105 - rotationMass) / 8)}s` }}
+              >
                  <div className="absolute inset-0 bg-[url('/07_dynamic_fashion_in_motion.png')] bg-cover mix-blend-overlay opacity-60 grayscale" />
                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.8)_70%)]" />
                  <div className="w-1/4 h-1/4 border-[2px] border-luxury-gold rounded-full bg-luxury-void flex items-center justify-center z-10 shadow-2xl">
@@ -120,7 +245,7 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 03 — THE WORLD (Fashion Campaigns 15%) */}
-            <SceneLayer index={3} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex items-center justify-center px-10">
+            <SceneLayer index={3} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex items-center justify-center px-10 lg:pl-80">
               <div className="flex w-full max-w-6xl h-[70vh] gap-4 md:gap-12 relative">
                 <div className="hidden md:block w-1/3 h-full relative border border-luxury-gold/10 p-2 bg-luxury-void/50 backdrop-blur-md">
                    <img src="/03_bold_fashion_with_motion_blur_effect.png" alt="Fashion Editorial 1" className="w-full h-full object-cover grayscale opacity-80" />
@@ -137,7 +262,7 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 04 — THE MARKS (Typography & Signature 14%) */}
-            <SceneLayer index={4} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center">
+            <SceneLayer index={4} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center lg:pl-80">
               <div className="font-serif text-[25vw] leading-none text-luxury-platinum/5 tracking-tighter mix-blend-screen pointer-events-none select-none">
                 KSP
               </div>
@@ -152,7 +277,7 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 05 — THE PACING (Light vs Dark 5%) */}
-            <SceneLayer index={5} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center px-10">
+            <SceneLayer index={5} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center px-10 lg:pl-80">
               <div className="absolute inset-0 bg-luxury-platinum transition-opacity duration-1000 mix-blend-difference opacity-90" />
               <div className="relative z-10 flex flex-col items-center justify-center h-full max-w-4xl">
                 <h2 className="font-serif text-4xl md:text-7xl uppercase tracking-[0.2em] text-center text-luxury-void leading-tight">
@@ -165,7 +290,7 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 06 — THE ARTIFACTS (Real Artifacts 2%) */}
-            <SceneLayer index={6} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center px-10 md:px-20 pointer-events-auto">
+            <SceneLayer index={6} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center px-10 md:px-20 pointer-events-auto lg:pl-80">
               <h2 className="font-sans text-[10px] tracking-[0.5em] text-luxury-gold uppercase mb-16 text-center absolute top-24">
                 <GlitchText text="Real Artifacts" isActive={activeScene === 6} />
               </h2>
@@ -177,7 +302,7 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 07 — THE SEAL (Giragon 1%) */}
-            <SceneLayer index={7} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center pointer-events-auto">
+            <SceneLayer index={7} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center pointer-events-auto lg:pl-80">
               <div className="w-20 h-20 border-[1px] border-luxury-gold/40 rounded-full flex items-center justify-center relative group cursor-pointer">
                 <div className="absolute inset-2 bg-luxury-gold/10 rounded-full animate-pulse group-hover:bg-luxury-gold/30 transition-colors" />
                 <div className="absolute inset-0 flex items-center justify-center font-serif text-lg text-luxury-gold group-hover:scale-110 transition-transform">G</div>
@@ -188,7 +313,7 @@ export default function App() {
             </SceneLayer>
 
             {/* SCENE 08 — THE GATEWAY (Final Action 1%) */}
-            <SceneLayer index={8} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center px-10">
+            <SceneLayer index={8} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center px-10 lg:pl-80">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,135,74,0.05)_0%,transparent_60%)]" />
               <h2 className="font-serif text-4xl md:text-6xl text-luxury-platinum uppercase tracking-widest mb-16 text-center">
                 <GlitchText text="Enter The Archive" isActive={activeScene === 8} />

@@ -4,16 +4,40 @@ import { motion } from 'motion/react';
 interface DiagnosticHUDProps {
   spotlightEnabled: boolean;
   onToggleSpotlight: () => void;
+  gridMom?: number;
+  setGridMom?: (v: number) => void;
+  rotMass?: number;
+  setRotMass?: (v: number) => void;
+  depthComp?: number;
+  setDepthComp?: (v: number) => void;
 }
 
-export default function DiagnosticHUD({ spotlightEnabled, onToggleSpotlight }: DiagnosticHUDProps) {
+export default function DiagnosticHUD({ 
+  spotlightEnabled, 
+  onToggleSpotlight,
+  gridMom,
+  setGridMom,
+  rotMass,
+  setRotMass,
+  depthComp,
+  setDepthComp
+}: DiagnosticHUDProps) {
   const [active, setActive] = useState(false);
 
-  const [gridMom, setGridMom] = useState(64);
-  const [rotMass, setRotMass] = useState(42);
-  const [depthComp, setDepthComp] = useState(78);
+  const [localGridMom, setLocalGridMom] = useState(64);
+  const [localRotMass, setLocalRotMass] = useState(42);
+  const [localDepthComp, setLocalDepthComp] = useState(78);
   const [revealRad, setRevealRad] = useState(300);
   const [undCont, setUndCont] = useState(85);
+
+  const gridMomVal = gridMom !== undefined ? gridMom : localGridMom;
+  const setGridMomVal = setGridMom || setLocalGridMom;
+
+  const rotMassVal = rotMass !== undefined ? rotMass : localRotMass;
+  const setRotMassVal = setRotMass || setLocalRotMass;
+
+  const depthCompVal = depthComp !== undefined ? depthComp : localDepthComp;
+  const setDepthCompVal = setDepthComp || setLocalDepthComp;
 
   const renderSlider = (val: number, setVal: (v: number) => void, max: number = 100, isRight = false) => {
     const chars = 14;
@@ -58,15 +82,15 @@ export default function DiagnosticHUD({ spotlightEnabled, onToggleSpotlight }: D
       >
         <div>
           <div className="mb-1">GRID MOMENTUM</div>
-          {renderSlider(gridMom, setGridMom)}
+          {renderSlider(gridMomVal, setGridMomVal)}
         </div>
         <div>
           <div className="mb-1">ROTATION MASS</div>
-          {renderSlider(rotMass, setRotMass)}
+          {renderSlider(rotMassVal, setRotMassVal)}
         </div>
         <div>
           <div className="mb-1">DEPTH COMPRESSION</div>
-          {renderSlider(depthComp, setDepthComp)}
+          {renderSlider(depthCompVal, setDepthCompVal)}
         </div>
       </motion.div>
 

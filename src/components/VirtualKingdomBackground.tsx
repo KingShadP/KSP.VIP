@@ -3,34 +3,39 @@ import { motion, useScroll, useTransform } from 'motion/react';
 
 interface VirtualKingdomBackgroundProps {
   theme: 'imperial' | 'alabaster' | 'chrome';
+  gridMomentum?: number;
+  depthCompression?: number;
 }
 
-export default function VirtualKingdomBackground({ theme }: VirtualKingdomBackgroundProps) {
+export default function VirtualKingdomBackground({ theme, gridMomentum = 64, depthCompression = 78 }: VirtualKingdomBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const speedMultiplier = gridMomentum / 64;
+  const compressionFactor = depthCompression / 78;
 
   // Get scroll progress of the entire window
   const { scrollYProgress } = useScroll();
 
-  // Define scale/opacity transforms for the portal camera flythrough
-  const portalScale = useTransform(scrollYProgress, [0, 0.45], [1, 2.2]);
+  // Define scale/opacity transforms for the portal camera flythrough with depth compression scaling
+  const portalScale = useTransform(scrollYProgress, [0, 0.45], [1, 1 + 1.2 * compressionFactor]);
   const portalOpacity = useTransform(scrollYProgress, [0, 0.35, 0.45], [0.9, 0.4, 0]);
   const portalBlur = useTransform(scrollYProgress, [0, 0.35], ['0px', '4px']);
 
   // Dark marble background plate parallax
-  const marbleScale = useTransform(scrollYProgress, [0, 1], [1.02, 1.18]);
-  const marbleY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
+  const marbleScale = useTransform(scrollYProgress, [0, 1], [1.02, 1.02 + 0.16 * compressionFactor]);
+  const marbleY = useTransform(scrollYProgress, [0, 1], ["0%", `${8 * compressionFactor}%`]);
 
   // Staged 3D pillars/architectural layers pushing outwards
-  const pillarLeftX = useTransform(scrollYProgress, [0, 0.5], ["0%", "-15%"]);
-  const pillarRightX = useTransform(scrollYProgress, [0, 0.5], ["0%", "15%"]);
-  const pillarScale = useTransform(scrollYProgress, [0, 0.5], [1, 1.3]);
+  const pillarLeftX = useTransform(scrollYProgress, [0, 0.5], ["0%", `${-15 * compressionFactor}%`]);
+  const pillarRightX = useTransform(scrollYProgress, [0, 0.5], ["0%", `${15 * compressionFactor}%`]);
+  const pillarScale = useTransform(scrollYProgress, [0, 0.5], [1, 1 + 0.3 * compressionFactor]);
   const pillarOpacity = useTransform(scrollYProgress, [0, 0.4, 0.5], [0.18, 0.08, 0]);
 
   // Inner Chamber (reveals itself and scales up to full focus as we go deeper)
-  const innerRoomScale = useTransform(scrollYProgress, [0.1, 0.65], [0.85, 1.15]);
+  const innerRoomScale = useTransform(scrollYProgress, [0.1, 0.65], [0.85, 1 + 0.15 * compressionFactor]);
   const innerRoomOpacity = useTransform(scrollYProgress, [0, 0.2, 0.75], [0.15, 0.45, 0.9]);
-  const innerRoomY = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  const innerRoomY = useTransform(scrollYProgress, [0, 1], [0, 50 * compressionFactor]);
 
   // Light sweeps
   const lightSweepX = useTransform(scrollYProgress, [0, 1], ['-50%', '150%']);
@@ -65,8 +70,8 @@ export default function VirtualKingdomBackground({ theme }: VirtualKingdomBackgr
       }
 
       update(scrollVelocity: number) {
-        this.y += this.speedY - scrollVelocity * 3;
-        this.x += this.speedX;
+        this.y += (this.speedY - scrollVelocity * 3) * speedMultiplier;
+        this.x += this.speedX * speedMultiplier;
 
         if (this.y < 0) {
           this.y = height;
