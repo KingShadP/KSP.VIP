@@ -128,8 +128,27 @@ export default function TrackingReticle() {
       }
     };
 
+    const handleVirtualMouseMove = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      // Synthesize a mouse event look-alike using the detail
+      const virtualE = {
+        clientX: customEvent.detail.x,
+        clientY: customEvent.detail.y,
+      } as MouseEvent;
+      lastEvent = virtualE;
+      if (!ticking) {
+        requestAnimationFrame(updateReticle);
+        ticking = true;
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('virtualmousemove', handleVirtualMouseMove, { passive: true });
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('virtualmousemove', handleVirtualMouseMove);
+    };
   }, [active, hoverType, luminance]);
 
   if (!active) return null;

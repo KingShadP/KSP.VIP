@@ -10,6 +10,7 @@ import TiltCard from './components/TiltCard';
 import SceneTransitionDust from './components/SceneTransitionDust';
 import SceneLayer from './components/SceneLayer';
 import MagneticButton from './components/MagneticButton';
+import ParallaxBackground from './components/ParallaxBackground';
 
 export default function App() {
   const [bootloaded, setBootloaded] = useState(false);
@@ -69,7 +70,7 @@ export default function App() {
             
             {/* SCENE 01 — THE ARTIST (Imagery Dominance 35%) */}
             <SceneLayer index={1} scrollYProgress={smoothProgress} activeScene={activeScene} className="flex flex-col items-center justify-center">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-[center_top] opacity-60 mix-blend-luminosity" />
+              <ParallaxBackground imageUrl="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2000&auto=format&fit=crop" />
               <div className="absolute inset-0 bg-gradient-to-b from-luxury-void/20 via-transparent to-luxury-void" />
               <h1 className="font-serif text-6xl md:text-9xl text-luxury-platinum uppercase tracking-widest font-extralight mix-blend-difference z-10 text-center drop-shadow-2xl mt-48">
                 KingShadP
