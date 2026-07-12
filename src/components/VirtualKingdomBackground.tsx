@@ -168,10 +168,10 @@ export default function VirtualKingdomBackground({ theme }: VirtualKingdomBackgr
       <motion.div
         style={{
           backgroundImage: theme === 'imperial' 
-            ? `url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&auto=format&fit=crop')` 
+            ? `url('/Luxurious%20myth%20and%20modern%20vision.png')` 
             : theme === 'alabaster' 
-              ? `url('https://images.unsplash.com/photo-1618220179428-22790b461013?q=80&w=1600&auto=format&fit=crop')`
-              : `url('https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1600&auto=format&fit=crop')`,
+              ? `url('/01_a_stylized_fashion_product_portrait_studio_image.png')`
+              : `url('/black%20marble%20gallery%20with%20sculptural%20jacket.png')`,
           scale: marbleScale,
           y: marbleY,
         }}

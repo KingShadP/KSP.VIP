@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 
-export default function DiagnosticHUD() {
+interface DiagnosticHUDProps {
+  spotlightEnabled: boolean;
+  onToggleSpotlight: () => void;
+}
+
+export default function DiagnosticHUD({ spotlightEnabled, onToggleSpotlight }: DiagnosticHUDProps) {
   const [active, setActive] = useState(false);
 
   const [gridMom, setGridMom] = useState(64);
@@ -75,7 +80,16 @@ export default function DiagnosticHUD() {
         <div className="w-full">
           <div className="mb-1">REVEAL MASK</div>
           <div className="text-platinum/50 flex justify-end">
-            <button className="border border-platinum/20 px-2 py-0.5 hover:bg-platinum hover:text-obsidian transition-colors">ACTIVE</button>
+            <button
+              onClick={onToggleSpotlight}
+              className={`border px-2 py-0.5 transition-colors cursor-pointer ${
+                spotlightEnabled
+                  ? 'border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-luxury-void font-bold'
+                  : 'border-platinum/20 text-platinum/40 hover:bg-platinum hover:text-luxury-void'
+              }`}
+            >
+              {spotlightEnabled ? 'ACTIVE' : 'MUTED'}
+            </button>
           </div>
         </div>
         <div className="w-full">

@@ -7,7 +7,7 @@ export const PRODUCTS: Product[] = [
     name: 'Giragon Insignia Cloaked Jersey',
     price: 185.00,
     collection: 'giragon',
-    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop', // Classic dark t-shirt
+    image: '/01_a_stylized_fashion_product_portrait_studio_image.png', // Classic dark t-shirt
     description: 'An uncompromising 420GSM heavy structured cotton jersey featuring a sculptural high-density matte black puff imprint of the Giraffagon coat of arms. Cleanly finished in deep charcoal voids with a double-folded neckline.',
     color: 'Void Charcoal',
     edition: 'Edition of 100 / Sealed Legacy',
@@ -20,7 +20,7 @@ export const PRODUCTS: Product[] = [
     name: 'Heraldry Crest Compression Long Sleeve',
     price: 240.00,
     collection: 'giragon',
-    image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=600&auto=format&fit=crop', // Minimalist long sleeve
+    image: '/02_bold_confidence_in_dynamic_motion.png', // Minimalist long sleeve
     description: 'An anatomically paneled compression top engineered in raw oxblood-dyed technical thread. Features distressed jacquard venting across the shoulder blades with a gold-leaf hand-pressed lineage mark.',
     color: 'Raw Oxblood & Ash',
     edition: 'Edition of 75 / Sovereign Release',
@@ -33,7 +33,7 @@ export const PRODUCTS: Product[] = [
     name: 'Ascendant Linear Armour Sleeve',
     price: 265.00,
     collection: 'giragon',
-    image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop', // Textured black long sleeve
+    image: '/03_bold_fashion_with_motion_blur_effect.png', // Textured black long sleeve
     description: 'A structural double-knit heavy long-sleeve utilizing precise geometric seams. Embedded with an unburnished gold-alloy micro-insignia along the cuffs, showcasing the finality of linear minimalism.',
     color: 'Platinum Obsidian',
     edition: 'Edition of 50 / Atelier Verified',
@@ -48,7 +48,7 @@ export const PRODUCTS: Product[] = [
     name: 'Atelier French Terry Drop Shorts',
     price: 210.00,
     collection: 'ksp',
-    image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=600&auto=format&fit=crop', // Premium heavy shorts
+    image: '/05_cinematic_portrait_with_motion_blur_effect.png', // Premium heavy shorts
     description: 'Loopback cotton fleece shorts with an elongated drop-crotch and architectural paneling. Secured by hand-braided cords finished with solid sterling silver aglets and laser-etched KSP monogram.',
     color: 'Soot Black',
     edition: 'Permanent Atelier Core',
@@ -61,7 +61,7 @@ export const PRODUCTS: Product[] = [
     name: 'Lineage Modular Lounge Pant',
     price: 295.00,
     collection: 'ksp',
-    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=600&auto=format&fit=crop', // Male joggers/streetwear look
+    image: '/06_confident_style_in_motion_blur.png', // Male joggers/streetwear look
     description: 'Sculpted lounge pants with structural knee articulation and hidden magnetic seams. Embellished with the subtle jacquard-woven crest of the Giragon lineage.',
     color: 'Carbon Obsidian',
     edition: 'Permanent Atelier Core',
@@ -74,7 +74,7 @@ export const PRODUCTS: Product[] = [
     name: 'Dynasty Heavyweight Armor Sweater',
     price: 480.00,
     collection: 'ksp',
-    image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop', // Luxury dark crewneck
+    image: '/07_dynamic_fashion_in_motion.png', // Luxury dark crewneck
     description: 'A monument of architectural shape. Features heavy horizontal-grain reverse panels to prevent collapse of the structural silhouette. Finished with cashmere-soft interior loops and a high-density embossed chest moniker.',
     color: 'Royal Oxblood Void',
     edition: 'Atelier Dynasty Release',
@@ -87,7 +87,7 @@ export const PRODUCTS: Product[] = [
     name: 'Sovereign Signature Crest Tee',
     price: 135.00,
     collection: 'ksp',
-    image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop', // Black luxury tee
+    image: '/11_styled_motion_blur_fashion_portrait.png', // Black luxury tee
     description: 'The foundation of the daily uniform. Cleanly structured shoulder line with hand-threaded platinum embroidery across the left collarbone. Heavyweight drape with high-side lateral slits.',
     color: 'Matte Asphalt',
     edition: 'Atelier Core Base',
@@ -102,7 +102,7 @@ export const PRODUCTS: Product[] = [
     name: 'Solid Platinum & Oxblood Coral Signet',
     price: 1250.00,
     collection: 'museum',
-    image: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?q=80&w=600&auto=format&fit=crop', // Signet ring detail
+    image: '/08_modern_dragon_blueprint_in_motion.png', // Signet ring detail
     description: 'A massive sculptural hand-cast solid platinum ring set with an hand-carved oxblood-red Mediterranean coral seal. Individually numbered and sulfur-etched to establish an ancient, museum-grade patina.',
     color: 'Aged Platinum & Oxblood Coral',
     edition: 'Release 001 / Year 2024 / Limited 12',
@@ -115,7 +115,7 @@ export const PRODUCTS: Product[] = [
     name: 'Atelier Kevlar & Black Marble Chest Rig',
     price: 1450.00,
     collection: 'museum',
-    image: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=600&auto=format&fit=crop', // Avant-garde vest look
+    image: '/black%20marble%20gallery%20with%20sculptural%20jacket.png', // Avant-garde vest look
     description: 'A strictly protective utility body rig constructed with a black-marble printed aramid ballistic core. Perfected with modular leather harnesses and secure heavy matte-black steel buckles.',
     color: 'Black Marble & Matte Steel',
     edition: 'Release 002 / Year 2024 / Vaulted',
@@ -130,7 +130,7 @@ export const PRODUCTS: Product[] = [
     name: 'Obsidian Silk-Wool Cleric Cloak',
     price: 1950.00,
     collection: 'museum',
-    image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop', // Overcoat photo
+    image: '/09_moody_fashion_portrait_with_motion_blur.png', // Overcoat photo
     description: 'The definitive outerwear monument. A double-layer floor-length heavy duster coat featuring an structural, enveloping hood, hidden weapon-slits, and magnetic forearm snaps. Pure windproof elegance.',
     color: 'Obsidian Void',
     edition: 'Release 003 / Year 2025 / Locked',
@@ -145,7 +145,7 @@ export const PRODUCTS: Product[] = [
     name: 'Oxblood Cashmere Architectural Overcoat',
     price: 2450.00,
     collection: 'museum',
-    image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=600&auto=format&fit=crop', // Trench coat
+    image: '/12_studio_portrait_with_a_single_male_subject_against.png', // Trench coat
     description: 'A towering double-breasted overcoat tailored in pure high-weight raw virgin cashmere. Features an extreme dropped shoulder posture, premium dark-red silk-satin internal linings, and heavy internal security pockets.',
     color: 'Royal Oxblood',
     edition: 'Release 004 / Year 2025 / Locked',

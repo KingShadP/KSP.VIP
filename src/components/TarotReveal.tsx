@@ -76,6 +76,15 @@ export default function TarotReveal() {
       if (audioCtxRef.current.state === 'suspended') {
         audioCtxRef.current.resume();
       }
+
+      // Synchronously play ultra-short silent oscillation to fully unblock Web Audio context on iOS & Safari
+      const osc = audioCtxRef.current.createOscillator();
+      const gain = audioCtxRef.current.createGain();
+      gain.gain.setValueAtTime(0.0001, audioCtxRef.current.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtxRef.current.destination);
+      osc.start(0);
+      osc.stop(audioCtxRef.current.currentTime + 0.05);
     } catch (e) {}
 
     setAsking(false);
@@ -272,14 +281,14 @@ export default function TarotReveal() {
                       rotateZ: isFlipped ? 0 : 0 
                     }}
                     transition={isFlipped ? { type: 'spring', stiffness: 40, damping: 20, duration: 2 } : { type: 'spring', stiffness: 50, damping: 10, duration: 2 }}
-                    style={{ transformStyle: 'preserve-3d' }}
+                    style={{ transformStyle: 'preserve-3d', WebkitTransformStyle: 'preserve-3d' }}
                     className="relative w-64 md:w-80 h-96 md:h-[450px] cursor-pointer shadow-[0_0_50px_rgba(168,135,74,0.5)]"
                     onClick={handleFlip}
                   >
                     {/* BACK OF CARD (Visually front before flip) */}
                     <div 
-                      style={{ backfaceVisibility: 'hidden' }}
-                      className="absolute inset-0 bg-obsidian border-[3px] border-antique-gold p-4 flex flex-col items-center justify-center bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center mix-blend-screen"
+                      style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                      className="absolute inset-0 bg-obsidian border-[3px] border-antique-gold p-4 flex flex-col items-center justify-center bg-[url('/black%20marble%20gallery%20with%20sculptural%20jacket.png')] bg-cover bg-center mix-blend-screen"
                     >
                       <div className="absolute inset-0 bg-obsidian/90 mix-blend-multiply" />
                       <div className="relative z-10 w-24 h-24 border-2 border-antique-gold/50 rotate-45 flex items-center justify-center">
@@ -292,8 +301,8 @@ export default function TarotReveal() {
 
                     {/* FRONT OF CARD (Visually back before flip) */}
                     <div 
-                      style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                      className="absolute inset-0 bg-obsidian border-[3px] border-antique-gold p-4 flex flex-col justify-between items-center bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center mix-blend-screen overflow-hidden"
+                      style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                      className="absolute inset-0 bg-obsidian border-[3px] border-antique-gold p-4 flex flex-col justify-between items-center bg-[url('/Luxurious%20myth%20and%20modern%20vision.png')] bg-cover bg-center mix-blend-screen overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-obsidian/80 mix-blend-multiply" />
                       
