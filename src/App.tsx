@@ -13,9 +13,13 @@ import MagneticButton from './components/MagneticButton';
 import ParallaxBackground from './components/ParallaxBackground';
 import GlitchText from './components/GlitchText';
 import SpotlightToggle from './components/SpotlightToggle';
+import ArchiveTerminal from './components/ArchiveTerminal';
+import { Terminal } from 'lucide-react';
+import { AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [bootloaded, setBootloaded] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const [spotlightEnabled, setSpotlightEnabled] = useState(() => {
     const stored = localStorage.getItem('spotlight_enabled');
     return stored !== 'false';
@@ -94,7 +98,15 @@ export default function App() {
           <div className="fixed top-0 left-0 right-0 h-16 border-b border-luxury-platinum/10 bg-luxury-void/80 backdrop-blur-md flex items-center justify-between px-10 z-[60] select-none pointer-events-auto">
             <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-platinum uppercase">KingShadP // Archive</div>
             <div className="hidden md:block font-mono text-[10px] tracking-[0.2em] text-luxury-gold uppercase font-semibold">Sovereign Atelier Establishing Sig.</div>
-            <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-platinum/60 uppercase">Vol. 07</div>
+            <div className="flex items-center gap-4">
+              <div className="font-mono text-[10px] tracking-[0.2em] text-luxury-platinum/60 uppercase hidden sm:block">Vol. 07</div>
+              <button 
+                onClick={() => setTerminalOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 border border-luxury-gold/50 text-luxury-gold hover:bg-luxury-gold/10 transition-colors font-mono text-[10px] tracking-widest uppercase cursor-pointer"
+              >
+                <Terminal className="w-3 h-3" /> Terminal
+              </button>
+            </div>
           </div>
 
           {/* Bottom Navigation */}
@@ -109,6 +121,10 @@ export default function App() {
               Giragon Seal © 2026
             </div>
           </div>
+
+          <AnimatePresence>
+            {terminalOpen && <ArchiveTerminal onClose={() => setTerminalOpen(false)} />}
+          </AnimatePresence>
 
 
           <DiagnosticHUD 
