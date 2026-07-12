@@ -22,6 +22,8 @@ export default function TarotReveal() {
   const [card, setCard] = useState(TAROT_CARDS[0]);
   const [isFlipped, setIsFlipped] = useState(false);
   const [savedCardName, setSavedCardName] = useState<string | null>(null);
+  const [reading, setReading] = useState<string | null>(null);
+  const [isReadingLoading, setIsReadingLoading] = useState(false);
 
   useEffect(() => {
     const revealed = sessionStorage.getItem('tarotRevealed');
@@ -32,13 +34,24 @@ export default function TarotReveal() {
     }
   }, []);
 
-  const handleFlip = () => {
+  const handleFlip = async () => {
     if (isFlipped) return;
     setIsFlipped(true);
     sessionStorage.setItem('tarotRevealed', 'true');
     sessionStorage.setItem('tarotCardName', card.name);
     setSavedCardName(card.name);
     setHasRevealed(true);
+    
+    setIsReadingLoading(true);
+    try {
+      const res = await fetch('/api/tarot', { method: 'POST' });
+      const data = await res.json();
+      setReading(data.reading);
+    } catch (e) {
+      setReading("THE VOID ANSWERS WITH SILENCE.");
+    } finally {
+      setIsReadingLoading(false);
+    }
   };
 
   const handleHover = () => {
@@ -306,6 +319,11 @@ export default function TarotReveal() {
                         <p className="font-sans text-[10px] text-antique-gold tracking-[0.3em] uppercase">
                           {card.desc}
                         </p>
+                        {isReadingLoading ? (
+                           <p className="font-serif text-xs text-platinum tracking-widest mt-4 text-center px-4 animate-pulse">COMMUNING...</p>
+                        ) : reading ? (
+                           <p className="font-serif text-[10px] md:text-xs text-platinum tracking-widest mt-4 text-center px-2 opacity-80 leading-relaxed italic border-t border-antique-gold/20 pt-2">{reading}</p>
+                        ) : null}
                       </div>
                     </div>
                   </motion.div>
