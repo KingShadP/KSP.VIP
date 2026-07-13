@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 
 function getLuminance(rgbString: string) {
   const match = rgbString.match(/\d+/g);
@@ -20,7 +20,12 @@ interface TrailElement {
 }
 
 export default function TrackingReticle() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const pointerX = useTransform(mouseX, x => x - 37);
+  const pointerY = useTransform(mouseY, y => y - 37);
+  const posXText = useTransform(mouseX, x => `X +${Math.round(x).toString().padStart(4, "0")}`);
+  const posYText = useTransform(mouseY, y => `Y -${Math.round(y).toString().padStart(4, "0")}`);
   const [active, setActive] = useState(false);
   const [sector, setSector] = useState('S05');
   const [status, setStatus] = useState('ACTIVE');
@@ -38,7 +43,8 @@ export default function TrackingReticle() {
       if (!lastEvent) return;
       const e = lastEvent;
       
-      setPos({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
       if (!active) setActive(true);
       
       const now = Date.now();
@@ -207,8 +213,8 @@ export default function TrackingReticle() {
       <motion.div
         className="absolute top-0 left-0"
         style={{
-          x: pos.x - 37,
-          y: pos.y - 37,
+          x: pointerX,
+          y: pointerY,
         }}
         transition={{ type: 'tween', duration: 0 }}
       >
@@ -252,8 +258,8 @@ export default function TrackingReticle() {
                 exit={{ opacity: 0 }}
                 className="absolute top-[49px] left-[49px] font-mono text-[9px] text-white tracking-widest whitespace-nowrap opacity-60"
               >
-                <div>X +{pos.x.toString().padStart(4, '0')}</div>
-                <div>Y -{pos.y.toString().padStart(4, '0')}</div>
+                <motion.div>{posXText}</motion.div>
+                <motion.div>{posYText}</motion.div>
                 <div>{sector}</div>
                 <div>{status}</div>
               </motion.div>
