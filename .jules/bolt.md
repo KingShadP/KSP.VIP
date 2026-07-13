@@ -1,0 +1,3 @@
+## 2024-05-14 - React State vs. MotionValues in framer-motion loops
+**Learning:** For components dependent on `requestAnimationFrame` and high-frequency DOM events (like `mousemove`), keeping coordinates in regular React state (`useState`) triggers catastrophic re-renders across the whole component tree or its wrapper (even forcing diffs on purely presentational DOM elements).
+**Action:** Always extract continuously updated coordinates into `useMotionValue`. Use `useTransform` to derive UI-bound text/numbers and feed them directly into `motion.div` styles/children to bypass React’s reconciliation engine.
