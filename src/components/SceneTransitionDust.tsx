@@ -30,7 +30,7 @@ export default function SceneTransitionDust({ activeScene }: { activeScene: numb
   );
 }
 
-function Burst({ direction, key }: { direction: number, key?: React.Key }) {
+const Burst: React.FC<{ direction: number }> = ({ direction }) => {
   const particles = Array.from({ length: 45 });
   return (
     <motion.div
