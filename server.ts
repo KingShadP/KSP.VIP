@@ -30,14 +30,22 @@ async function startServer() {
       });
       res.json({ reading: response.text });
     } catch (e: any) {
-      console.error(e);
-      res.status(500).json({ error: e.message || "Failed to generate reading" });
+      console.error('Error in /api/tarot:', e);
+      res.status(500).json({ error: "Failed to generate reading" });
     }
   });
 
   app.post("/api/terminal/chat", requireAuth, async (req: AuthRequest, res) => {
     try {
       const { prompt, mode } = req.body;
+
+      if (typeof prompt !== 'string' || !prompt.trim()) {
+        return res.status(400).json({ error: "Invalid prompt format" });
+      }
+      if (prompt.length > 2000) {
+        return res.status(400).json({ error: "Prompt exceeds maximum length of 2000 characters" });
+      }
+
       const ai = getGemini();
       
       let model = "gemini-3.5-flash";
@@ -58,14 +66,22 @@ async function startServer() {
 
       res.json({ text: response.text });
     } catch (e: any) {
-      console.error(e);
-      res.status(500).json({ error: e.message || "Failed to generate response" });
+      console.error('Error in /api/terminal/chat:', e);
+      res.status(500).json({ error: "Failed to generate response" });
     }
   });
 
   app.post("/api/terminal/image", requireAuth, async (req: AuthRequest, res) => {
     try {
       const { prompt, size } = req.body;
+
+      if (typeof prompt !== 'string' || !prompt.trim()) {
+        return res.status(400).json({ error: "Invalid prompt format" });
+      }
+      if (prompt.length > 2000) {
+        return res.status(400).json({ error: "Prompt exceeds maximum length of 2000 characters" });
+      }
+
       const ai = getGemini();
       
       const response = await ai.models.generateContent({
@@ -90,8 +106,8 @@ async function startServer() {
 
       res.json({ imageUrl });
     } catch (e: any) {
-      console.error(e);
-      res.status(500).json({ error: e.message || "Failed to generate image" });
+      console.error('Error in /api/terminal/image:', e);
+      res.status(500).json({ error: "Failed to generate image" });
     }
   });
 
