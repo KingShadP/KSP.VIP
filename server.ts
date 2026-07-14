@@ -21,7 +21,7 @@ async function startServer() {
     res.json({ user: req.user });
   });
 
-  app.post("/api/tarot", async (req, res) => {
+  app.post("/api/tarot", requireAuth, async (req: AuthRequest, res) => {
     try {
       const ai = getGemini();
       const response = await ai.models.generateContent({
