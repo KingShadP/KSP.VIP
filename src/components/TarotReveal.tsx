@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { auth } from '../lib/firebase';
 
 const TAROT_CARDS = [
   { name: "THE FOOL", desc: "Infinite Potential" },
@@ -24,6 +25,14 @@ export default function TarotReveal() {
   const [savedCardName, setSavedCardName] = useState<string | null>(null);
   const [reading, setReading] = useState<string | null>(null);
   const [isReadingLoading, setIsReadingLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const revealed = sessionStorage.getItem('tarotRevealed');
@@ -44,7 +53,13 @@ export default function TarotReveal() {
     
     setIsReadingLoading(true);
     try {
-      const res = await fetch('/api/tarot', { method: 'POST' });
+      const token = await user?.getIdToken();
+      const res = await fetch('/api/tarot', {
+        method: 'POST',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        }
+      });
       const data = await res.json();
       setReading(data.reading);
     } catch (e) {
