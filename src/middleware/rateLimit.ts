@@ -37,15 +37,14 @@ export const rateLimitAI = (req: AuthRequest, res: Response, next: NextFunction)
     return next();
   }
 
-  record.count += 1;
-
-  if (record.count > MAX_REQUESTS) {
-    res.status(429).json({
-      error: "Too many requests. Please try again later."
-    });
+  if (record.count >= MAX_REQUESTS) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((record.resetTime - now) / 1000));
+    res.set('Retry-After', String(retryAfterSeconds));
+    res.status(429).json({ error: 'Too many requests. Please try again later.', retryAfterSeconds });
     return;
   }
 
+  record.count += 1;
   rateStore.set(identifier, record);
-  next();
+  return next();
 };
