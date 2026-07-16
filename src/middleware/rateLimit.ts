@@ -1,14 +1,23 @@
 import { Response, NextFunction } from 'express';
 import { AuthRequest } from './auth.ts';
 
-// Simple in-memory rate store
-// A robust solution would use Redis or a similar store, but for this PR
-// an in-memory solution is acceptable as a primary security enhancement < 50 lines.
-const rateStore = new Map<string, { count: number, resetTime: number }>();
+// Simple in-memory rate store (process-local)
+// A robust solution would use Redis or a similar shared store, but for this PR
+// an in-memory solution is acceptable as a primary security enhancement (< 50 lines).
+const rateStore = new Map<string, { count: number; resetTime: number }>();
 
 // Limit: 20 requests per 15 minutes window (900000 ms)
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_REQUESTS = 20;
+
+// Prevent unbounded growth from one-off identifiers (e.g., many user UIDs).
+const sweepTimer = setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of rateStore) {
+    if (now > value.resetTime + WINDOW_MS) rateStore.delete(key);
+  }
+}, WINDOW_MS);
+sweepTimer.unref?.();
 
 export const rateLimitAI = (req: AuthRequest, res: Response, next: NextFunction): void => {
   // Use user.uid if authenticated, else IP
