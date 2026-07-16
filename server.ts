@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { requireAuth, AuthRequest } from './src/middleware/auth.ts';
+import { rateLimitAI } from './src/middleware/rateLimit.ts';
 import { getGemini } from './src/lib/gemini.ts';
 import { ThinkingLevel } from "@google/genai";
 
@@ -9,6 +10,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  app.disable("x-powered-by"); // Security: hide express signature
   app.use(express.json());
 
   // API routes
@@ -21,7 +23,7 @@ async function startServer() {
     res.json({ user: req.user });
   });
 
-  app.post("/api/tarot", requireAuth, async (req: AuthRequest, res) => {
+  app.post("/api/tarot", requireAuth, rateLimitAI, async (req: AuthRequest, res) => {
     try {
       const ai = getGemini();
       const response = await ai.models.generateContent({
@@ -35,7 +37,7 @@ async function startServer() {
     }
   });
 
-  app.post("/api/terminal/chat", requireAuth, async (req: AuthRequest, res) => {
+  app.post("/api/terminal/chat", requireAuth, rateLimitAI, async (req: AuthRequest, res) => {
     try {
       const { prompt, mode } = req.body;
 
@@ -71,7 +73,7 @@ async function startServer() {
     }
   });
 
-  app.post("/api/terminal/image", requireAuth, async (req: AuthRequest, res) => {
+  app.post("/api/terminal/image", requireAuth, rateLimitAI, async (req: AuthRequest, res) => {
     try {
       const { prompt, size } = req.body;
 
