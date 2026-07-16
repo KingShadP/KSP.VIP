@@ -13,6 +13,23 @@ async function startServer() {
   app.disable("x-powered-by"); // Security: hide express signature
   app.use(express.json());
 
+  // Security headers middleware
+  app.use((req, res, next) => {
+    // Prevent MIME-sniffing
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    // Prevent clickjacking
+    res.setHeader("X-Frame-Options", "DENY");
+    // Enable XSS filtering in legacy browsers
+    res.setHeader("X-XSS-Protection", "1; mode=block");
+    // Require HTTPS connections
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    // Control referrer information
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    // Basic Content Security Policy (allows inline styles/scripts for Vite development)
+    res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com");
+    next();
+  });
+
   // API routes
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
