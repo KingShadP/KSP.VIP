@@ -19,12 +19,18 @@ export const requireAuth = async (
 
   const token = authHeader.split('Bearer ')[1];
   try {
-    const decodedToken = await adminAuth.verifyIdToken(token);
+    // SECURITY: checkRevoked is true. This forces a backend check to ensure the token
+    // hasn't been revoked, protecting against disabled/deleted user authorization bypass.
+    const decodedToken = await adminAuth.verifyIdToken(token, true);
     req.user = decodedToken;
     next();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error verifying Firebase ID token:', error);
-    res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    if (error.code === 'auth/id-token-revoked') {
+      res.status(401).json({ error: 'Unauthorized: Token has been revoked' });
+    } else {
+      res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    }
     return;
   }
 };
