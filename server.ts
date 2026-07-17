@@ -64,6 +64,9 @@ async function startServer() {
       if (prompt.length > 2000) {
         return res.status(400).json({ error: "Prompt exceeds maximum length of 2000 characters" });
       }
+      if (mode && !['standard', 'deep', 'quick', 'image'].includes(mode)) {
+        return res.status(400).json({ error: "Invalid mode parameter" });
+      }
 
       const ai = getGemini();
       
@@ -99,6 +102,9 @@ async function startServer() {
       }
       if (prompt.length > 2000) {
         return res.status(400).json({ error: "Prompt exceeds maximum length of 2000 characters" });
+      }
+      if (size && !['1K', '2K', '4K'].includes(size)) {
+        return res.status(400).json({ error: "Invalid size parameter" });
       }
 
       const ai = getGemini();
