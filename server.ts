@@ -11,7 +11,8 @@ async function startServer() {
   const PORT = 3000;
 
   app.disable("x-powered-by"); // Security: hide express signature
-  app.use(express.json());
+  app.set("trust proxy", 1); // Security: trust first proxy to ensure correct IP for rate limiting
+  app.use(express.json({ limit: "10kb" })); // Security: limit payload size to prevent DoS
 
   // Security headers middleware
   app.use((req, res, next) => {
@@ -64,6 +65,9 @@ async function startServer() {
       if (prompt.length > 2000) {
         return res.status(400).json({ error: "Prompt exceeds maximum length of 2000 characters" });
       }
+      if (mode && !['standard', 'deep', 'quick'].includes(mode)) {
+        return res.status(400).json({ error: "Invalid mode parameter" });
+      }
 
       const ai = getGemini();
       
@@ -99,6 +103,9 @@ async function startServer() {
       }
       if (prompt.length > 2000) {
         return res.status(400).json({ error: "Prompt exceeds maximum length of 2000 characters" });
+      }
+      if (size && !['1K', '2K', '4K'].includes(size)) {
+        return res.status(400).json({ error: "Invalid size parameter" });
       }
 
       const ai = getGemini();
