@@ -17,3 +17,8 @@
 **Vulnerability:** The Express server lacked basic HTTP security headers (CSP, X-Frame-Options, HSTS, etc.), leaving the application vulnerable to clickjacking, MIME-sniffing, and cross-site scripting (XSS).
 **Learning:** Relying solely on default Express settings is insufficient for production security. Frameworks like Express do not enforce security headers out of the box.
 **Prevention:** Implement custom middleware or use libraries like Helmet to inject standard security headers globally for all incoming requests, configuring Content Security Policy (CSP) according to the app's specific resource needs.
+
+## 2026-07-18 - [MEDIUM] Missing Payload Size Limits and Missing Trust Proxy for Rate Limiting
+**Vulnerability:** The `express.json()` middleware lacked a size limit, potentially allowing large JSON payloads to crash the server (DoS). Additionally, rate limiting could easily misidentify user IPs when behind a proxy because `trust proxy` was not configured. Finally, terminal endpoints accepted arbitrary strings for `mode` and `size`, opening up potential object injection/unintended behavior downstream.
+**Learning:** Default configurations for parsing middleware are often overly permissive. When deploying behind proxies (e.g., Cloud Run, Nginx), failure to configure proxy trust results in all requests appearing to come from the proxy IP, effectively disabling or breaking rate limiting. Unvalidated enums allow unexpected data to reach internal logic.
+**Prevention:** Always set explicit limits on request parsers (e.g., `express.json({ limit: "10kb" })`). Configure proxy trust based on the deployment environment to ensure client IPs are correctly identified. Strictly validate all input parameters against an allowlist of expected values.
