@@ -17,3 +17,8 @@
 **Vulnerability:** The Express server lacked basic HTTP security headers (CSP, X-Frame-Options, HSTS, etc.), leaving the application vulnerable to clickjacking, MIME-sniffing, and cross-site scripting (XSS).
 **Learning:** Relying solely on default Express settings is insufficient for production security. Frameworks like Express do not enforce security headers out of the box.
 **Prevention:** Implement custom middleware or use libraries like Helmet to inject standard security headers globally for all incoming requests, configuring Content Security Policy (CSP) according to the app's specific resource needs.
+
+## 2026-07-21 - [CRITICAL] Missing Explicit Firestore Security Rules
+**Vulnerability:** The application writes directly to Firestore from the frontend client (`ArchiveTerminal.tsx`), but lacked explicitly defined `firestore.rules` and `firebase.json` mapped in the repository. This meant the database was exposed to unauthorized read/write access depending on the default project settings.
+**Learning:** When clients write directly to a backend database like Firestore, the default assumption should be that explicit security rules must be defined and version-controlled within the codebase to prevent unauthorized access.
+**Prevention:** Always create a `firestore.rules` (and map it in `firebase.json`) to explicitly deny all access by default, and only allow authenticated users to perform operations on resources that belong to them (e.g., `request.auth.uid == resource.data.userId`).
