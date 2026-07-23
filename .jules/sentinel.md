@@ -17,3 +17,8 @@
 **Vulnerability:** The Express server lacked basic HTTP security headers (CSP, X-Frame-Options, HSTS, etc.), leaving the application vulnerable to clickjacking, MIME-sniffing, and cross-site scripting (XSS).
 **Learning:** Relying solely on default Express settings is insufficient for production security. Frameworks like Express do not enforce security headers out of the box.
 **Prevention:** Implement custom middleware or use libraries like Helmet to inject standard security headers globally for all incoming requests, configuring Content Security Policy (CSP) according to the app's specific resource needs.
+
+## 2024-05-20 - [MEDIUM] Unbounded Resource Consumption (DoS)
+**Vulnerability:** The in-memory rate limiter in `src/middleware/rateLimit.ts` allowed an attacker to consume unbounded memory by flooding requests with unique identifiers (e.g., spoofed IPs or random UIDs).
+**Learning:** Security mechanisms themselves can become attack vectors if their resource usage is unbounded. In-memory data structures must have explicit size caps to prevent Out of Memory (OOM) crashes.
+**Prevention:** Implement strict size bounds on in-memory caches or stores (e.g., capping `rateStore.size`) and evict the oldest entries when the limit is reached instead of completely flushing the cache.
