@@ -9,6 +9,7 @@ const rateStore = new Map<string, { count: number; resetTime: number }>();
 // Limit: 20 requests per 15 minutes window (900000 ms)
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_REQUESTS = 20;
+const MAX_STORE_SIZE = 10000; // Security: Hard cap on memory usage to prevent DoS
 
 // Prevent unbounded growth from one-off identifiers (e.g., many user UIDs).
 const sweepTimer = setInterval(() => {
@@ -22,6 +23,15 @@ sweepTimer.unref?.();
 export const rateLimitAI = (req: AuthRequest, res: Response, next: NextFunction): void => {
   // Use user.uid if authenticated, else IP
   const identifier = req.user?.uid || req.ip || 'unknown';
+
+  // Security: Protect against memory exhaustion DoS attacks by bounding the Map size
+  if (rateStore.size >= MAX_STORE_SIZE && !rateStore.has(identifier)) {
+    // Evict the oldest entry (Map maintains insertion order) to avoid flushing all limits
+    const oldestKey = rateStore.keys().next().value;
+    if (oldestKey !== undefined) {
+      rateStore.delete(oldestKey);
+    }
+  }
 
   const now = Date.now();
   const record = rateStore.get(identifier);
