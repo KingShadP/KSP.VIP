@@ -1,0 +1,24 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Explicitly deny all default access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Rules for the queries collection
+    match /queries/{queryId} {
+      // Users can only create a query if the userId matches their auth uid
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+
+      // Users can only read/delete queries they own.
+      allow read, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+
+      // Users can only update queries they own, and they cannot change the userId
+      allow update: if request.auth != null
+                    && request.auth.uid == resource.data.userId
+                    && request.auth.uid == request.resource.data.userId;
+    }
+  }
+}
