@@ -21,3 +21,8 @@
 **Vulnerability:** Firebase `verifyIdToken` does not natively check if a token has been revoked or the user disabled unless explicitly configured via the second argument `true`.
 **Learning:** Default validation bypasses real-time revocation checks, leaving an authentication window open for disabled users until the token organically expires. Missing strict string validations on inputs that pass configurations (like model configs).
 **Prevention:** Pass `true` as the second argument to `adminAuth.verifyIdToken()` when full revocation checks are desired, and gracefully handle the `auth/id-token-revoked` error code. Implement server-side check for expected enum strings in Express routes.
+
+## 2026-07-18 - [CRITICAL] Missing Firestore Security Rules
+**Vulnerability:** The application was using the Firebase client SDK to read and write directly to Firestore (the `queries` collection) without any explicit `firestore.rules` defined in the repository. This meant the database lacked row-level access control.
+**Learning:** When writing to Firebase directly from the frontend, explicit security rules are mandatory to enforce authorization and prevent users from accessing others' data.
+**Prevention:** Always define a `firestore.rules` file linked via `firebase.json` when interacting with Firestore from the client side, checking `request.auth.uid`.
