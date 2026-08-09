@@ -136,6 +136,17 @@ async function startServer() {
     }
   });
 
+  // Global Error Handler
+  // Must be placed after API routes and before Vite middleware to catch API errors
+  // such as JSON syntax errors and prevent HTML stack trace leaks to the client.
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      return res.status(400).json({ error: "Invalid JSON payload" });
+    }
+    console.error('Unhandled error:', err);
+    res.status(500).json({ error: "Internal server error" });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
