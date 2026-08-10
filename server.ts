@@ -136,6 +136,26 @@ async function startServer() {
     }
   });
 
+  // Global API error handler
+  // Placed after API routes but before Vite/static middlewares to intercept API errors
+  // Security: Prevents HTML stack traces from leaking on malformed JSON or other unhandled errors
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // If headers are already sent, delegate to default error handler
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    console.error('Unhandled API Error:', err);
+
+    // Handle specific known errors securely
+    if (err instanceof SyntaxError && 'body' in err) {
+      return res.status(400).json({ error: "Invalid JSON payload" });
+    }
+
+    // Generic fallback for all other errors
+    res.status(500).json({ error: "Internal Server Error" });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
