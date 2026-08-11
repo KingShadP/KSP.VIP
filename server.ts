@@ -136,6 +136,13 @@ async function startServer() {
     }
   });
 
+  // Global error handler to prevent stack traces from leaking to the client
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('API Error:', err.message);
+    const status = err.status || err.statusCode || 500;
+    res.status(status).json({ error: "An error occurred while processing your request." });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
