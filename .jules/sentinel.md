@@ -26,3 +26,8 @@
 **Vulnerability:** The application writes directly to Firebase Firestore from the frontend client SDK (e.g., in `ArchiveTerminal.tsx`), but the repository was missing explicit Firestore security rules (`firestore.rules` and `firebase.json`). This lack of authorization checks could allow any authenticated user to read or modify another user's data.
 **Learning:** When utilizing a BaaS (Backend-as-a-Service) like Firebase where clients interact directly with the database, strong client-side security rules must be defined and version-controlled to enforce row-level access control.
 **Prevention:** Always include `firestore.rules` and `firebase.json` in the repository to define explicit access controls ensuring users can only read and write their own documents based on authentication UID matching.
+
+## 2026-07-21 - [MEDIUM] Stack Trace Leakage on API Errors
+**Vulnerability:** Unhandled Express API errors (e.g. `SyntaxError` from invalid JSON payloads sent to `body-parser`) resulted in HTML stack traces being exposed to the client.
+**Learning:** Default Express error handling will return HTML stack traces or explicit error details to clients if a custom global error handler is not registered at the end of the middleware chain.
+**Prevention:** Always implement a dedicated global error-handling middleware (`app.use((err, req, res, next) => {...})`) specifically scoping to API routes. Ensure errors like JSON `SyntaxError`s are intercepted securely and return generic `400` or `500` JSON responses without leaking internal information.
