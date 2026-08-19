@@ -136,6 +136,23 @@ async function startServer() {
     }
   });
 
+  // Global error handler for API routes
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // Check if error is from body-parser for invalid JSON
+    if (err instanceof SyntaxError && 'status' in err && 'body' in err) {
+      console.error('JSON Parse Error:', err.message);
+      return res.status(400).json({ error: "Invalid JSON payload" });
+    }
+
+    // For other unhandled API errors
+    if (req.path.startsWith('/api/')) {
+      console.error('Unhandled API Error:', err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
