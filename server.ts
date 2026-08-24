@@ -136,6 +136,25 @@ async function startServer() {
     }
   });
 
+  // Global error handler middleware (must be after API routes, before Vite)
+  // Prevents leaking HTML stack traces for JSON parsing errors (e.g., SyntaxError) and general API errors
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // If response headers have already been sent, we must delegate to the default Express error handler
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Handle SyntaxError (e.g., body-parser failing on invalid JSON)
+    if (err instanceof SyntaxError && 'status' in err && 'body' in err) {
+      console.error('JSON parsing SyntaxError:', err.message);
+      return res.status((err as any).status || 400).json({ error: 'Invalid JSON payload' });
+    }
+
+    // General API error handling
+    console.error('Unhandled API Error:', err);
+    res.status(err.status || 500).json({ error: 'Internal Server Error' });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
