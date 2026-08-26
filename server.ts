@@ -136,6 +136,18 @@ async function startServer() {
     }
   });
 
+  // Global Error Handler for SyntaxErrors (e.g., body-parser JSON parsing)
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      console.error('Syntax error parsing JSON body:', err.message);
+      return res.status(400).json({ error: "Invalid JSON payload" });
+    }
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
