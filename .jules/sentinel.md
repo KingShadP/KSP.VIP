@@ -26,3 +26,8 @@
 **Vulnerability:** The application writes directly to Firebase Firestore from the frontend client SDK (e.g., in `ArchiveTerminal.tsx`), but the repository was missing explicit Firestore security rules (`firestore.rules` and `firebase.json`). This lack of authorization checks could allow any authenticated user to read or modify another user's data.
 **Learning:** When utilizing a BaaS (Backend-as-a-Service) like Firebase where clients interact directly with the database, strong client-side security rules must be defined and version-controlled to enforce row-level access control.
 **Prevention:** Always include `firestore.rules` and `firebase.json` in the repository to define explicit access controls ensuring users can only read and write their own documents based on authentication UID matching.
+
+## 2026-08-30 - [MEDIUM] Prevent Stack Trace Leak from Invalid JSON
+**Vulnerability:** The Express app was leaking detailed HTML stack traces when the \`body-parser\` encountered invalid JSON payloads (SyntaxError). This occurred because the error bypassed custom error handling and fell through to the Vite development middleware.
+**Learning:** In development environments (and potentially production if unhandled), underlying tools like Vite or Express can generate detailed HTML errors for unhandled exceptions (like JSON SyntaxError from \`express.json()\`).
+**Prevention:** Always place a global custom Express error handler (e.g. \`app.use((err, req, res, next) => {...})\`) after API routes but before Vite middleware to explicitly catch \`SyntaxError\` and other API exceptions, ensuring uniform, safe JSON responses.
