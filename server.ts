@@ -151,6 +151,23 @@ async function startServer() {
     });
   }
 
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Handle JSON parsing errors securely
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      console.error('Invalid JSON payload received');
+      return res.status(400).json({ error: 'Invalid JSON payload' });
+    }
+
+    // Fallback for unhandled errors
+    console.error('Unhandled Server Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  });
+
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
   });
