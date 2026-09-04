@@ -136,6 +136,26 @@ async function startServer() {
     }
   });
 
+  // Global Error Handler for /api routes
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      res.status(400).json({ error: "Bad Request: Malformed JSON" });
+      return;
+    }
+
+    if (req.path.startsWith('/api/')) {
+      console.error('Unhandled API Error:', err);
+      res.status(500).json({ error: "Internal Server Error" });
+      return;
+    }
+
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
