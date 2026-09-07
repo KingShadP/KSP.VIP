@@ -136,6 +136,22 @@ async function startServer() {
     }
   });
 
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Handle JSON parsing errors from body-parser
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      console.error('JSON Parse Error:', err.message);
+      return res.status(400).json({ error: "Bad Request: Invalid JSON" });
+    }
+
+    // Pass any other errors down the chain
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
