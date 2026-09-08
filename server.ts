@@ -136,6 +136,22 @@ async function startServer() {
     }
   });
 
+  // Global error handler to catch issues like JSON parsing SyntaxErrors
+  // Must be placed after API routes but before Vite/Static serving middleware
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Handle JSON parsing errors from express.json()
+    if (err instanceof SyntaxError && 'status' in err && 'body' in err && err.status === 400) {
+      return res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
+    }
+
+    console.error('Unhandled server error:', err);
+    res.status(500).json({ error: "Internal Server Error" });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
