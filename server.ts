@@ -136,6 +136,28 @@ async function startServer() {
     }
   });
 
+  // Global API error handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    if (req.path.startsWith('/api/')) {
+      console.error(`API Error on ${req.method} ${req.path}:`, err);
+
+      // Handle body-parser JSON SyntaxError
+      if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+        return res.status(400).json({ error: 'Invalid JSON payload' });
+      }
+
+      // Handle generic API errors
+      const status = typeof err.status === 'number' ? err.status : 500;
+      return res.status(status).json({ error: 'Internal Server Error' });
+    }
+
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
