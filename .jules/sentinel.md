@@ -26,3 +26,8 @@
 **Vulnerability:** The application writes directly to Firebase Firestore from the frontend client SDK (e.g., in `ArchiveTerminal.tsx`), but the repository was missing explicit Firestore security rules (`firestore.rules` and `firebase.json`). This lack of authorization checks could allow any authenticated user to read or modify another user's data.
 **Learning:** When utilizing a BaaS (Backend-as-a-Service) like Firebase where clients interact directly with the database, strong client-side security rules must be defined and version-controlled to enforce row-level access control.
 **Prevention:** Always include `firestore.rules` and `firebase.json` in the repository to define explicit access controls ensuring users can only read and write their own documents based on authentication UID matching.
+
+## 2024-05-18 - Express Body Parser Stack Trace Leak
+**Vulnerability:** Sending malformed JSON to Express endpoints caused `body-parser` to throw a `SyntaxError` which the default Express error handler returned as an HTML response containing a full stack trace.
+**Learning:** `body-parser` implicitly handles JSON parsing but throws errors that aren't caught by route try/catch blocks because it runs earlier in the middleware chain. Express's default fallback error handler leaks server internals.
+**Prevention:** Always implement a custom global Express error handler `app.use((err, req, res, next) => {...})` after all routes to catch and sanitize middleware errors (like `SyntaxError` with status 400) into safe, generic JSON responses.
