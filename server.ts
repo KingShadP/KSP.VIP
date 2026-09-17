@@ -136,6 +136,19 @@ async function startServer() {
     }
   });
 
+  // Error handling middleware for JSON parsing errors
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      console.error('JSON parsing error:', err);
+      res.status(400).json({ error: "Invalid JSON payload" });
+      return;
+    }
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
