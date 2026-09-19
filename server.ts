@@ -136,6 +136,26 @@ async function startServer() {
     }
   });
 
+  // Global error handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // If headers are already sent, delegate to default Express error handler
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Intercept JSON parsing SyntaxErrors
+    if (err instanceof SyntaxError && 'status' in err && err.status === 400 && 'body' in err) {
+      // Send safe generic message, logging error internally
+      console.error('JSON Parse Error:', err.message);
+      res.status(400).json({ error: "Invalid JSON payload" });
+      return;
+    }
+
+    // Default catch-all error handler
+    console.error('Unhandled Server Error:', err);
+    res.status(500).json({ error: "Internal Server Error" });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
