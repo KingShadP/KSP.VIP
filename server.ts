@@ -13,6 +13,15 @@ async function startServer() {
   app.disable("x-powered-by"); // Security: hide express signature
   app.use(express.json());
 
+  // Global error handler for JSON parsing to prevent stack trace leaks
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // Handle JSON parsing errors (e.g., body-parser)
+    if (err instanceof SyntaxError && 'status' in err && 'body' in err) {
+      return res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
+    }
+    next(err);
+  });
+
   // Security headers middleware
   app.use((req, res, next) => {
     // Prevent MIME-sniffing
@@ -134,6 +143,22 @@ async function startServer() {
       console.error('Error in /api/terminal/image:', e);
       res.status(500).json({ error: "Failed to generate image" });
     }
+  });
+
+  // Global error handler to prevent stack trace leaks
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Handle generic API errors
+    if (req.path.startsWith('/api/')) {
+      console.error('Unhandled API error:', err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    // Let default error handler manage non-API (frontend) errors
+    next(err);
   });
 
   // Vite middleware for development
