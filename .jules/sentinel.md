@@ -26,3 +26,8 @@
 **Vulnerability:** The application writes directly to Firebase Firestore from the frontend client SDK (e.g., in `ArchiveTerminal.tsx`), but the repository was missing explicit Firestore security rules (`firestore.rules` and `firebase.json`). This lack of authorization checks could allow any authenticated user to read or modify another user's data.
 **Learning:** When utilizing a BaaS (Backend-as-a-Service) like Firebase where clients interact directly with the database, strong client-side security rules must be defined and version-controlled to enforce row-level access control.
 **Prevention:** Always include `firestore.rules` and `firebase.json` in the repository to define explicit access controls ensuring users can only read and write their own documents based on authentication UID matching.
+
+## 2026-07-19 - [MEDIUM] Missing Express Global JSON Error Handler
+**Vulnerability:** Express default error handling middleware responds to invalid JSON parsing (from `body-parser`) by sending an HTML stack trace to the client, leading to potential internal information leakage.
+**Learning:** Default unhandled errors in Express `app.use(express.json())` leak detailed exceptions if not explicitly caught by custom middleware.
+**Prevention:** Implement a global API error handling middleware that captures JSON parsing syntax errors and returns a secure, standard 400 Bad Request JSON response, avoiding crash or leak scenarios.
