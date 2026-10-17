@@ -136,6 +136,25 @@ async function startServer() {
     }
   });
 
+  // Error handling middleware to prevent stack trace leaks
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    if (req.path.startsWith('/api/')) {
+      console.error(`API Error on ${req.method} ${req.path}:`, err.message || err);
+
+      if (err && typeof err === 'object' && 'status' in err && 'body' in err) {
+        return res.status(err.status || 400).json({ error: "Bad Request" });
+      }
+
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
