@@ -136,6 +136,25 @@ async function startServer() {
     }
   });
 
+  // Global API error handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    if (req.path.startsWith('/api/')) {
+      console.error('API Error:', err?.message || err);
+      let status = 500;
+      if (err && typeof err === 'object' && 'status' in err) {
+        status = err.status as number;
+      }
+      res.status(status).json({ error: 'An error occurred' });
+      return;
+    }
+
+    next(err);
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
