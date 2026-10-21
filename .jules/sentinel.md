@@ -26,3 +26,8 @@
 **Vulnerability:** The application writes directly to Firebase Firestore from the frontend client SDK (e.g., in `ArchiveTerminal.tsx`), but the repository was missing explicit Firestore security rules (`firestore.rules` and `firebase.json`). This lack of authorization checks could allow any authenticated user to read or modify another user's data.
 **Learning:** When utilizing a BaaS (Backend-as-a-Service) like Firebase where clients interact directly with the database, strong client-side security rules must be defined and version-controlled to enforce row-level access control.
 **Prevention:** Always include `firestore.rules` and `firebase.json` in the repository to define explicit access controls ensuring users can only read and write their own documents based on authentication UID matching.
+
+## 2024-05-18 - [MEDIUM] Secure Error Handling for JSON Parsing
+**Vulnerability:** The Express server used `app.use(express.json())` which, by default, threw a raw `SyntaxError` when receiving malformed JSON payloads. This error was unhandled by custom middleware, leaking an HTML stack trace back to the client and potentially exposing internal framework details.
+**Learning:** Default framework behaviors often fall back to verbose HTML error pages. For APIs, any error during middleware processing (like body parsing) should be caught and transformed into a safe, generic JSON response to prevent information leakage.
+**Prevention:** Implement a global error-handling middleware `(err, req, res, next)` after all API routes but before other middleware (like Vite). Check if the error is a `SyntaxError` from `body-parser` and return a generic 400 JSON response, taking care to check `res.headersSent` to prevent crashing.
