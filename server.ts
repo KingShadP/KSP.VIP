@@ -136,16 +136,17 @@ async function startServer() {
     }
   });
 
-  // Global API error handler
+  // Global error handler
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (res.headersSent) {
       return next(err);
     }
+    // Catch JSON parsing errors globally to prevent HTML stack trace leaks
+    if (err && typeof err === 'object' && err instanceof SyntaxError && 'status' in err && 'body' in err) {
+      res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
+      return;
+    }
     if (req.path.startsWith('/api/')) {
-      if (err && typeof err === 'object' && err instanceof SyntaxError && 'status' in err && 'body' in err) {
-        res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
-        return;
-      }
       console.error('Unhandled API Error:', err);
       res.status(err.status || 500).json({ error: "An error occurred" });
       return;
