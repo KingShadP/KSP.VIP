@@ -31,3 +31,8 @@
 **Vulnerability:** The Express server used `app.use(express.json())` which, by default, threw a raw `SyntaxError` when receiving malformed JSON payloads. This error was unhandled by custom middleware, leaking an HTML stack trace back to the client and potentially exposing internal framework details.
 **Learning:** Default framework behaviors often fall back to verbose HTML error pages. For APIs, any error during middleware processing (like body parsing) should be caught and transformed into a safe, generic JSON response to prevent information leakage.
 **Prevention:** Implement a global error-handling middleware `(err, req, res, next)` after all API routes but before other middleware (like Vite). Check if the error is a `SyntaxError` from `body-parser` and return a generic 400 JSON response, taking care to check `res.headersSent` to prevent crashing.
+
+## 2024-10-24 - Fix stack trace leakage on malformed JSON
+**Vulnerability:** Information Disclosure - Stack trace leak due to path-restricted JSON error handler in Express.
+**Learning:** If a global JSON parsing error handler is restricted by a path prefix (e.g., `req.path.startsWith('/api/')`), malformed JSON payloads sent to non-API routes fall through to the default Express error handler, which leaks HTML stack traces to the client.
+**Prevention:** Catch JSON parsing errors (`SyntaxError` from `body-parser`) globally before any path-specific routing or conditional checks in the global error handler.
