@@ -141,11 +141,15 @@ async function startServer() {
     if (res.headersSent) {
       return next(err);
     }
+
+    // Catch JSON parsing errors for all routes to prevent HTML stack traces
+    if (err && typeof err === 'object' && err instanceof SyntaxError && 'status' in err && 'body' in err) {
+      console.error('JSON parsing error:', err);
+      res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
+      return;
+    }
+
     if (req.path.startsWith('/api/')) {
-      if (err && typeof err === 'object' && err instanceof SyntaxError && 'status' in err && 'body' in err) {
-        res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
-        return;
-      }
       console.error('Unhandled API Error:', err);
       res.status(err.status || 500).json({ error: "An error occurred" });
       return;
