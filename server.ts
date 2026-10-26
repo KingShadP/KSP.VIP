@@ -141,15 +141,21 @@ async function startServer() {
     if (res.headersSent) {
       return next(err);
     }
+
+    // Security: Catch JSON parse errors globally (even on non-API routes)
+    // to prevent leaking HTML stack traces from Express default error handler.
+    if (err && typeof err === 'object' && err instanceof SyntaxError && 'status' in err && 'body' in err) {
+      console.error('JSON Parse Error:', err.message);
+      res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
+      return;
+    }
+
     if (req.path.startsWith('/api/')) {
-      if (err && typeof err === 'object' && err instanceof SyntaxError && 'status' in err && 'body' in err) {
-        res.status(400).json({ error: "Bad Request: Invalid JSON payload" });
-        return;
-      }
       console.error('Unhandled API Error:', err);
       res.status(err.status || 500).json({ error: "An error occurred" });
       return;
     }
+
     next(err);
   });
 
